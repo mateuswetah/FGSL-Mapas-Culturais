@@ -13,6 +13,11 @@
     <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/skeleton.css">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,14 +30,26 @@
                 <p>O anúncio usado no site para palestra</p>
             </div>
         </div>
+        <hr>
         <br>
         <div class="row">
             <div 
-                    id="newSchedule" 
-                    class="schedule column">
-                <p>
-                    {{ content }}
-                </p>
+                    id="event-3374" 
+                    class="column">
+                <template   
+                        v-cloak       
+                        v-if="!isLoadingEvent">
+                    <template v-if="eventObject != undefined">
+                        <h3>
+                            {{ eventObject.name }}
+                        </h3>
+                        <p>{{ eventObject.occurrences[0].rule.description }}</p>
+                        <p>{{ eventObject.occurrences[0].space.name }}</p>
+                    </template>
+                </template>
+                <template v-else>
+                    Carregando evento...
+                </template>
             </div>   
         </div>
     </div>
@@ -40,35 +57,38 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script type="text/javascript">
         new Vue({
-            el: '#newSchedule',
+            el: '#event-3374',
             data: {
-                endpoint: 'http://mapas.cultura.gov.br/api/event/find?id=eq(3374)&@select=id, name,occurrences.{id,space.{name},rule}',
-                content: 'Carregando...'
+                endpoint: 'http://mapas.cultura.gov.br/api/event/find',
+                select: 'id, name,occurrences.{id,space.{name},rule}',
+                eventObject: undefined,
+                isLoadingEvent: false
             },
             methods: {
-                showError() {
-                    this.content = "Erro ao carregar dados da API.";  
-                },
-                showSchedule(schedule) {
-                this.content = schedule;
+                showEvent(loadedEvent) {
+                    this.isLoadingEvent = false;
+                    this.eventObject = loadedEvent[0];
                 }
             },
-            created() {
-        
+            mounted() {
+                var eventId = this.$el.id.split('-')[1];
                 var request = new XMLHttpRequest();
-                request.open('GET', this.endpoint, false);
+
+                request.open('GET', this.endpoint + '?id=eq('+ eventId +')&@select=' + this.select, false);
+
                 request.onload = () => {
                     if (request.status >= 200 && request.status < 400) {
-                        this.showSchedule(JSON.parse(request.responseText));
+                        this.showEvent(JSON.parse(request.responseText));
                     } else {
-                        this.showError();
+                        this.isLoadingEvent = false;
                     }
                 };
 
-                request.onerror = function() {
-                    this.showError();
+                request.onerror = () => {
+                    this.isLoadingEvent = false;
                 };
-
+                
+                this.isLoadingEvent = true;
                 request.send();
             }
         });
