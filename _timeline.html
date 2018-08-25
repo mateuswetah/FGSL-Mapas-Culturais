@@ -1,0 +1,78 @@
+<!doctype html>
+
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Timeline | FGSL &hearts; Mapas Culturais</title>
+    <meta name="description" content="FGSL <3 Mapas Culturais">
+    <meta name="author" content="Mateus Machado Luna">
+    
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="column">
+                <h1><a href="index.html">FGSL &hearts; Mapas Culturais</a></h1>
+                <br>
+                <h2>Timeline de Atividades</h2>
+                <p>A programação do Evento</p>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div 
+                    id="newSchedule" 
+                    class="schedule column">
+                <p>
+                    {{ content }}
+                </p>
+            </div>   
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script type="text/javascript">
+        new Vue({
+            el: '#newSchedule',
+            data: {
+                endpoint: 'http://mapas.cultura.gov.br/api/event/find?id=eq(3374)&@select=id, name,occurrences.{id,space.{name},rule}',
+                content: 'Carregando...'
+            },
+            methods: {
+                showError() {
+                    this.content = "Erro ao carregar dados da API.";  
+                },
+                showSchedule(schedule) {
+                this.content = schedule;
+                }
+            },
+            created() {
+        
+                var request = new XMLHttpRequest();
+                request.open('GET', this.endpoint, false);
+                request.onload = () => {
+                    if (request.status >= 200 && request.status < 400) {
+                        this.showSchedule(JSON.parse(request.responseText));
+                    } else {
+                        this.showError();
+                    }
+                };
+
+                request.onerror = function() {
+                    this.showError();
+                };
+
+                request.send();
+            }
+        });
+    </script>
+</body>
+
+</html>
