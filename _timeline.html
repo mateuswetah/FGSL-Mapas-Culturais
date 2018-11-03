@@ -29,47 +29,197 @@
         <div class="row">
             <div 
                     id="newSchedule" 
-                    class="schedule column">
-                <p>
-                    {{ content }}
+                    class="timeline schedule column">
+
+                <!-- Search Options Form-->
+                <form>
+                    <!-- VEvent Edition -->
+                    <label for="editionSelect">
+                        Versão do Evento
+                    </label>
+                    <select     
+                            class="u-full-width" 
+                            id="editionSelect"
+                            v-model="currentEdition"
+                            @input="getTalks()">
+                        <option 
+                                v-for="(eventSetting, index) of eventSettings"
+                                :key="index"
+                                :value="index">
+                            {{ eventSetting.label }}
+                        </option>
+                    </select>
+
+                    <label for="searchInput">
+                        Buscar palestras
+                    </label>
+                    <input  
+                            type="text" 
+                            placeholder="Nome da palestra..." 
+                            id="searchInput"
+                            v-model="searchString">
+                    <button
+                            class="button"
+                            type="button"
+                            @click="getTalks()">Buscar</button>
+
+                </form>
+
+                <!-- Loading or error Messages-->
+                <p v-if="!isLoading">
+                    {{ message }}
                 </p>
+
+                <!-- The timeline itself -->
+                <div 
+                        v-if="!isLoading"
+                        class="timeline-block"
+                        :key="index"
+                        v-for="(talk, index) of talks">
+                    <div class="timeline-img movie bounce-in">
+                        <img 
+                                v-if="talk['@files:avatar.avatarMedium'] != undefined && talk['@files:avatar.avatarMedium'].url != undefined"
+                                alt="Foto da Palestra"
+                                :src="talk['@files:avatar.avatarMedium'].url">
+                    </div>
+                    <div class="timeline-content bounce-in">
+                        <div class="row equal-height">
+                            <div class="col-left">
+                                <div 
+                                        class="content-left ">
+                                    <h5 class="timeline-title">
+                                        {{ talk.name }}
+                                    </h5>
+                                    <p>
+                                            {{ showDetails[index] ? talk.shortDescription : (talk.longDescription != "" ? talk.longDescription : talk.shortDescription) }}
+                                    </p>
+                                    <div 
+                                            v-if="talk.user != undefined && talk.user.agents != undefined"
+                                            class="speaker clearfix"
+                                            v-for="(agent, aIndex) of talk.user.agents"
+                                            :key="aIndex">
+                                        <h6 class="speaker-name">
+                                            {{ agent.name }}
+                                        </h6>
+                                        <span class="font-12">
+                                            {{ showDetails[index] ? agent.shortDescription : (agent.longDescription != "" ? agent.longDescription : agent.shortDescription) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-right">
+                                <div class="content-right">
+                                    <ul class="timeline-meta">
+                                        <li
+                                                v-if="talk.occurrences != undefined"
+                                                v-for="(occurrence, oIndex) of talk.occurrences"
+                                                :key="oIndex">
+                                            <i class="fa fa-clock-o"></i>
+                                            {{ occurrence.rule.startsAt }} - {{ occurrence.rule.endsAt }}
+                                        </li>
+                                    </ul>
+                                    <button 
+                                            @click="toggleShowDetails(index)"
+                                            type="button"
+                                            class="button">
+                                        {{ showDetails[index] ? 'Mostrar menos' : 'Mostrar mais' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>   
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.5.2/qs.min.js"></script>
+
     <script type="text/javascript">
         new Vue({
             el: '#newSchedule',
             data: {
-                endpoint: 'http://mapas.cultura.gov.br/api/event/find?id=eq(3374)&@select=id, name,occurrences.{id,space.{name},rule}',
-                content: 'Carregando...'
+                message: 'Carregando...',
+                isLoading: false,
+                talks: [],
+                showDetails: [],
+                currentEdition: 0,
+                eventSettings: [
+                    {
+                        label: 'XV FGSL (2018)',
+                        projectId: 1503,
+                        days: [
+                            '2018-11-22',
+                            '2018-11-23',
+                            '2018-11-24',
+                        ]
+                    }
+                ],
+                searchString: '',
+                endpoint: 'http://mapas.cultura.gov.br/api/event/find?',// &@from=2018-09-12&@to=2018-11-07
+                query: {
+                    'project': 'EQ(@Project:1503)',
+                    '@select': 'id,user.{agents.{name,longDescription,shortDescription}},name,longDescription,shortDescription,terms,occurrences.{id,space.{name},rule}',
+                    '@files': '(avatar.avatarMedium):url',
+                    '@limit': 100,
+                    '@page': 1
+                },
             },
             methods: {
                 showError() {
-                    this.content = "Erro ao carregar dados da API.";  
+                    this.message = "Erro ao carregar dados da API.";  
                 },
                 showSchedule(schedule) {
-                this.content = schedule;
+                    this.message = '';
+                    this.talks = schedule;
+                    this.showDetails = new Array(this.talks.length).fill(false);
+                },
+                updateSearchString(searchString) {
+                    if (searchString != this.searchString) {
+                        this.searchString = searchString;
+                        this.getTalks();
+                    }
+                },
+                getTalks() {
+                    
+                    // Clean search
+                    this.isLoading = true;
+                    this.message = 'Carregando...';
+                    this.talks = [];
+
+                    // Updates query with search params
+                    this.query.project = 'EQ(@Project:' + this.eventSettings[this.currentEdition].projectId + ')';
+                    if (this.searchString != '')
+                        this.query['@keyword'] = this.searchString;
+                    else
+                        delete this.query['@keyword'];
+
+                    // Prepare Endoint
+                    var request = new XMLHttpRequest();
+                    request.open('GET', this.endpoint + Qs.stringify(this.query), false);
+                    request.onload = () => {
+                        this.isLoading = false;
+                        
+                        if (request.status >= 200 && request.status < 400) {
+                            this.showSchedule(JSON.parse(request.responseText));
+                        } else {
+                            this.showError();
+                        }
+                    };
+                    request.onerror = () => {
+                        this.showError();
+                    };
+
+                    // Performs the request
+                    request.send();
+                },
+                toggleShowDetails(index) {
+                    this.$set(this.showDetails, index, !this.showDetails[index]);
                 }
             },
             created() {
-        
-                var request = new XMLHttpRequest();
-                request.open('GET', this.endpoint, false);
-                request.onload = () => {
-                    if (request.status >= 200 && request.status < 400) {
-                        this.showSchedule(JSON.parse(request.responseText));
-                    } else {
-                        this.showError();
-                    }
-                };
-
-                request.onerror = () => {
-                    this.showError();
-                };
-
-                request.send();
+                this.getTalks();
             }
         });
     </script>
