@@ -1,0 +1,45 @@
+*, *::after, *::before{
+	box-sizing: border-box;
+}
+
+html, body{
+	width: 100%;
+	height: 100%;
+}
+
+html {
+	font-size: 16px;
+}
+
+body {
+	background-color: #2a778c;
+	background-image: url(/up/2/o/background_fgsl.png);
+  background-attachment: fixed;
+  background-position: center center;
+  background-size: cover;
+  padding: 0!important;
+	overflow-x: hidden; 
+}
+
+.container {  width: auto!important; }
+
+#wrapper { 
+  min-height: calc(100% - 414px);
+  margin-top: 70px;
+  transition: .25s ease-in;
+  -webkit-transition: .25s ease-in;}
+
+#wrapper.fixed { margin-top: 50px; } 
+
+@media (min-width: 768px) { 
+  #wrapper { margin-top: 120px; } 
+  #wrapper.fixed { margin-top: 100px; } 
+}
+
+#weby_shortcut { opacity: 0.5; }
+
+#weby_shortcut:hover { opacity: 1.0; }
+
+#webybar { display: none; }
+
+#myModal { pointer-events: none; display: none;}

@@ -1,0 +1,233 @@
+/** PageBlock, News, Pages */
+
+@media (max-width: 34em) {
+}
+
+@media (max-width: 62em) {
+	.page-show > header,
+	.page-show > .page-details,
+	.page-show > div:not(.body),
+	.news-show > * {
+		margin-left: auto;
+		margin-right: auto;
+		width: 85% !important;
+	}
+	
+  .page-show .body > ul,
+  .page-show .body > ol,
+	.page-show .body > p,
+  .page-show .body > h1,
+  .page-show .body > h2,
+  .page-show .body > h3,
+  .page-show .body > h4,
+  .page-show .body .coord,
+	.page-show .body > div:not(.page-block) {
+		width: 85% !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	
+	.page-show .page-block {
+		text-align: center !important;
+		padding: 0 !important;
+	}
+}
+@media (min-width: 75em) {
+	.page-show > header,
+	.page-show > .page-details,
+	.page-show > div:not(.body),
+	.news-show > * {
+		margin-left: auto;
+		margin-right: auto;
+		width: 75% !important;
+	}
+	
+  .page-show .body > ul,
+  .page-show .body > ol,
+	.page-show .body > p,
+  .page-show .body > h1,
+  .page-show .body > h2,
+  .page-show .body > h3,
+  .page-show .body > h4,
+  .page-show .body .coord,
+	.page-show .body > div:not(.page-block) {
+		width: 75% !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+/*
+.page-show > header,
+.page-show > .page-details,
+.page-show > div:not(.body),
+.news-show > * {
+  margin-left: auto;
+  margin-right: auto;
+  width: 75% !important;
+}
+
+.page-show .body > p,
+.page-show .body > div:not(.page-block) {
+  width: 75% !important;
+  margin: 0 auto;
+}
+
+.page-show .page-block {
+	text-align: center;
+	padding: 0 120px;
+}
+*/
+
+
+/** End PageBock, News, Pages */
+
+@media (min-width: 1100px) {
+	.page-show > header h2,
+  .news-show > header h2 {
+    margin-top: -49px;
+    margin-bottom: 25px;
+    color: #fff;
+  }
+}
+
+@media (max-width: 34em) {
+  .page-show .body h3,
+  .news-show .body h3{
+  	text-align: left;
+  }
+}
+
+@media (max-width: 47em) {
+  .page-show .body *,
+  .news-show .body *{
+    text-align: justify;
+    text-justify: inter-word;
+	-webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .page-show .body p img,
+  .news-show .body p img{
+    display: block;
+    float: none !important;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 862px) {
+  .timeline-content .col-left {
+  	display: block;
+    width: 100%;
+  }
+
+  .timeline-content .col-right {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    min-height: 0 !important;
+  }
+
+  .timeline-content .col-right ul,
+  .timeline-content .col-right a {
+  	margin-left: 0 !important;
+  }
+}
+
+/* Large devices (desktops, 62em and up) */
+@media (min-width: 62em) {
+  .page-show > *,
+  .news-show > *{
+    margin-left: auto;
+    margin-right: auto;
+    /* width: 80% !important; */
+  }
+
+  .page-show .page-block {
+    /*margin-left: -10%;
+    margin-right: -10%;*/
+  }
+}
+
+/* Extra large devices (large desktops, 75em and up) */
+/* 1200px */
+@media (min-width: 75em) {
+  .page-show > *,
+  .news-show > *{
+    margin-left: auto;
+    margin-right: auto;
+    /* width: 75%!important; */
+  }
+
+  .page-show .page-block {
+    /* margin-left: -12.5%; */
+    /* margin-right: -12.5%; */
+  }
+}
+
+/*************
+/	BOX-SOBRE
+**************/
+
+@media all and (max-width: 1000px) {
+    .sobre .main-box, .sobre .side-box {
+        width: 100%;
+    }
+ }
+
+ @media all and (max-width: 1000px) {
+    .sobre .side-box .counter, .sobre .side-box .location {
+			display: inline-block;
+      width: 50%;
+      float: left;
+		}
+
+   .sobre .side-box .counter {
+   		border-bottom: none;
+     	border-right: 3px #d9b84c solid;
+   }
+}
+
+ @media all and (max-width: 658px) {
+    .sobre .side-box .counter, .sobre .side-box .location {
+			display: inline-block;
+      width: 100%;
+      float: left;
+		}
+   .sobre .side-box .counter {
+   		border-bottom: 3px #d9b84c solid;
+     	border-right: none ;
+   }
+}
+
+/*************
+/ Página de Coordenações
+**************/
+ @media all and (max-width: 800px) {
+    .page-show .coord .coord-social {
+			display: inline;
+      width: 100%;
+      text-align: center;
+      margin: 5px 0px 5px 0px;
+      float: none;
+		}
+   
+   .page-show .coord .coord-social strong img {
+     display: inline; 
+     float: left;
+   }
+   
+   .page-show .coord .coord-image{
+      border-bottom: 4px #d9b84c solid;
+      max-width: 220px;
+      max-height: 220px;
+      margin: 0px 0px 10px 0px;
+    }
+}
+
+/*******/
+

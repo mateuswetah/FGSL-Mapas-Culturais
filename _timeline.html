@@ -9,61 +9,138 @@
     <title>Timeline | FGSL &hearts; Mapas Culturais</title>
     <meta name="description" content="FGSL <3 Mapas Culturais">
     <meta name="author" content="Mateus Machado Luna">
-    
-    <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css">
+    <link rel="stylesheet" href="css/site/_media_queries.css">
+    <link rel="stylesheet" href="css/site/_base.css">
+    <link rel="stylesheet" href="css/site/_typography.css">
+    <link rel="stylesheet" href="css/site/_pages.css">
+    <link rel="stylesheet" href="css/site/_schedule.css">
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="column">
-                <h1><a href="index.html">FGSL &hearts; Mapas Culturais</a></h1>
-                <br>
-                <h2>Timeline de Atividades</h2>
-                <p>A programação do Evento</p>
-            </div>
+    <div style="background-color: #efefef; padding: 1rem 5%">    
+        <div class="section">
+            <h1><a href="index.html">FGSL &hearts; Mapas Culturais</a></h1>
+            <br>
+            <h2>Timeline de Atividades</h2>
+            <p>A programação do Evento</p>
         </div>
         <br>
-        <div class="row">
+        <div class="section">
             <div 
                     id="newSchedule" 
                     class="timeline schedule column">
 
                 <!-- Search Options Form-->
                 <form>
-                    <!-- VEvent Edition -->
-                    <label for="editionSelect">
-                        Versão do Evento
-                    </label>
-                    <select     
-                            class="u-full-width" 
-                            id="editionSelect"
-                            v-model="currentEdition"
-                            @input="getTalks()">
-                        <option 
-                                v-for="(eventSetting, index) of eventSettings"
-                                :key="index"
-                                :value="index">
-                            {{ eventSetting.label }}
-                        </option>
-                    </select>
-
-                    <label for="searchInput">
-                        Buscar palestras
-                    </label>
-                    <input  
-                            type="text" 
-                            placeholder="Nome da palestra..." 
-                            id="searchInput"
-                            v-model="searchString">
-                    <button
-                            class="button"
-                            type="button"
-                            @click="getTalks()">Buscar</button>
-
+                    <!-- Event Edition -->
+                    <div class="form-group">
+                        <label for="editionSelect">
+                            Versão do Evento
+                        </label>
+                        <select     
+                                class="form-control" 
+                                id="editionSelect"
+                                v-model="currentEdition"
+                                @input="getTalks()">
+                            <option 
+                                    v-for="(eventSetting, index) of eventSettings"
+                                    :key="index"
+                                    :value="index">
+                                {{ eventSetting.label }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchInput">
+                            Buscar palestras
+                        </label>
+                        <input  
+                                class="form-control" 
+                                type="text" 
+                                placeholder="Nome da palestra..." 
+                                id="searchInput"
+                                v-model="searchString">
+                        <a
+                                class="button"
+                                type="button"
+                                @click="getTalks()">Buscar</a>
+                    </div>
+                    <div 
+                            v-if="!isLoadingSpaces"
+                            class="form-group">
+                        <label for="spacesSelect">
+                            Escolher Local
+                        </label>
+                        <select     
+                                class="form-control" 
+                                id="spacesSelect"
+                                v-model="currentSpace"
+                                @input="setCurrentSpace($event.target.value)">
+                            <option :value="null">
+                                Todos os locais
+                            </option>
+                            <option 
+                                    v-for="(space, index) of spaces"
+                                    :key="index"
+                                    :value="space.id">
+                                {{ space.name }}
+                            </option>
+                        </select>
+                    </div>
                 </form>
+                <br>
+                <hr>
+                <br>
+<!-- 
+                <div class="container" v-show="showSlider">
+                    <vue-slider 
+                            ref="timeSliderValue" 
+                            v-model="timeSliderValue"
+                            :data="timeSliderValues" 
+                            :show="showSlider"
+                            :lazy="true"
+                            tooltip="always"
+                            piecewise="true"
+                            piecewiseLabel="true"
+                            piecewiseStyle="{
+                                'backgroundColor': '#ccc',
+                                'visibility': 'visible',
+                                'width': '12px',
+                                'height': '12px'
+                            }"
+                            piecewiseActiveStyle="{
+                                'backgroundColor': '#3498db'
+                            }"
+                            labelActiveStyle="{
+                                'color': '#3498db'
+                            }"
+                            width="80%"
+                            :style="{ 'margin-left': '10%' }">
+                    </vue-slider>
+                </div>
+                <button @click="showSlider = !showSlider">Toggle</button> -->
+
+                <!-- Schedule Tabs -->
+                <div class="schedule-tab">
+                    <ul class="tab-category">
+                        <li 
+                                class="categoryActive" 
+                                v-for="(day, index) of eventSettings[currentEdition].days"
+                                :key="index"
+                                :id="'day-' + index">
+                            <h3>{{ day.label }}<i class="fa fa-users"></i></h3>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-tabs">
+                        <li 
+                                v-for="(day, index) of eventSettings[currentEdition].days"
+                                :key="index"
+                                :id="'day-' + index">
+                            <a>{{ day.label }}</a>
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- Loading or error Messages-->
                 <p v-if="!isLoading">
@@ -118,12 +195,20 @@
                                             {{ occurrence.rule.startsAt }} - {{ occurrence.rule.endsAt }}
                                         </li>
                                     </ul>
-                                    <button 
+                                    <a 
+                                            v-if="(
+                                                    talk.user != undefined && 
+                                                    talk.user.agents != undefined && 
+                                                    talk.user.agents[0] != undefined && 
+                                                    talk.user.agents[0].longDescription != undefined && 
+                                                    talk.user.agents[0].longDescription != ''
+                                                ) || 
+                                                (talk.longDescription != undefined && talk.longDescription != '')"
                                             @click="toggleShowDetails(index)"
                                             type="button"
                                             class="button">
                                         {{ showDetails[index] ? 'Mostrar menos' : 'Mostrar mais' }}
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -134,15 +219,27 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+    <script src="./js/vue-silder.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.5.2/qs.min.js"></script>
 
     <script type="text/javascript">
         new Vue({
             el: '#newSchedule',
+            components: {
+                'vueSlider': window[ 'vue-slider-component' ],
+            },
             data: {
                 message: 'Carregando...',
-                isLoading: false,
+                messageSpaces: 'Carregando...',
+                isLoadingSpaces: false,
                 talks: [],
+                // showSlider: false,
+                // timeSliderValue: 50,
+                // timeSliderValues: [
+                //     '2018-11-22',
+                //     '2018-11-23',
+                //     '2018-11-24'
+                // ],
                 showDetails: [],
                 currentEdition: 0,
                 eventSettings: [
@@ -150,30 +247,51 @@
                         label: 'XV FGSL (2018)',
                         projectId: 1503,
                         days: [
-                            '2018-11-22',
-                            '2018-11-23',
-                            '2018-11-24',
-                        ]
+                            { label: 'Dia 22', value: '2018-11-22' },
+                            { label: 'Dia 23', value: '2018-11-23' },
+                            { label: 'Dia 24', value: '2018-11-24' }
+                        ],
+                        spaceId: 13362//14748
                     }
                 ],
                 searchString: '',
-                endpoint: 'http://mapas.cultura.gov.br/api/event/find?',// &@from=2018-09-12&@to=2018-11-07
-                query: {
+                eventSearchEndpoint: 'http://mapas.cultura.gov.br/api/event/find?',// &@from=2018-09-12&@to=2018-11-07
+                spaceSearchEndpoint: 'http://mapas.cultura.gov.br/api/space/find?',
+                eventSearchQuery: {
                     'project': 'EQ(@Project:1503)',
                     '@select': 'id,user.{agents.{name,longDescription,shortDescription}},name,longDescription,shortDescription,terms,occurrences.{id,space.{name},rule}',
                     '@files': '(avatar.avatarMedium):url',
                     '@limit': 100,
                     '@page': 1
                 },
+                spaceSearchQuery: {
+                    'id': 'EQ(14748)',
+                    '@select': 'children.{name}',
+                    '@limit': 15,
+                    '@page': 1
+                },
+                currentSpace: null,
+                spaces: []
             },
             methods: {
                 showError() {
                     this.message = "Erro ao carregar dados da API.";  
                 },
+                showErrorSpaces() {
+                    this.messageSpaces = "Erro ao carregar dados da API.";  
+                },
                 showSchedule(schedule) {
                     this.message = '';
                     this.talks = schedule;
                     this.showDetails = new Array(this.talks.length).fill(false);
+                },
+                showSpaces(spaces) {
+                    this.messageSpaces = '';
+                    this.spaces = spaces[0].children;
+                },
+                setCurrentSpace(space) {
+                    this.currentSpace = space;
+                    this.getTalks();
                 },
                 updateSearchString(searchString) {
                     if (searchString != this.searchString) {
@@ -181,23 +299,28 @@
                         this.getTalks();
                     }
                 },
-                getTalks() {
-                    
+                getTalks(teste) {
                     // Clean search
                     this.isLoading = true;
                     this.message = 'Carregando...';
                     this.talks = [];
 
-                    // Updates query with search params
-                    this.query.project = 'EQ(@Project:' + this.eventSettings[this.currentEdition].projectId + ')';
-                    if (this.searchString != '')
-                        this.query['@keyword'] = this.searchString;
+                    // Updates eventSearchQuery with search params
+                    this.eventSearchQuery.project = 'EQ(@Project:' + this.eventSettings[this.currentEdition].projectId + ')';
+
+                    if (this.currentSpace != null)
+                        this.eventSearchQuery.space = 'EQ(@Space:' + this.currentSpace + ')';
                     else
-                        delete this.query['@keyword'];
+                        delete this.eventSearchQuery.space;
+                    
+                    if (this.searchString != '')
+                        this.eventSearchQuery['@keyword'] = this.searchString;
+                    else
+                        delete this.eventSearchQuery['@keyword'];
 
                     // Prepare Endoint
                     var request = new XMLHttpRequest();
-                    request.open('GET', this.endpoint + Qs.stringify(this.query), false);
+                    request.open('GET', this.eventSearchEndpoint + Qs.stringify(this.eventSearchQuery), false);
                     request.onload = () => {
                         this.isLoading = false;
                         
@@ -214,12 +337,42 @@
                     // Performs the request
                     request.send();
                 },
+                getSpaces() {
+                    
+                    // Clean search
+                    this.isLoadingSpaces = true;
+                    this.messageSpaces = 'Carregando...';
+                    this.spaces = [];
+
+                    // Updates spaceQuery with search params
+                    this.spaceSearchQuery.id = 'EQ(' + this.eventSettings[this.currentEdition].spaceId + ')';
+
+                    // Prepare Endoint
+                    var request = new XMLHttpRequest();
+                    request.open('GET', this.spaceSearchEndpoint + Qs.stringify(this.spaceSearchQuery), false);
+                    request.onload = () => {
+                        this.isLoadingSpaces = false;
+                        
+                        if (request.status >= 200 && request.status < 400) {
+                            this.showSpaces(JSON.parse(request.responseText));
+                        } else {
+                            this.showErrorSpaces();
+                        }
+                    };
+                    request.onerror = () => {
+                        this.showErrorSpaces();
+                    };
+
+                    // Performs the request
+                    request.send();
+                },
                 toggleShowDetails(index) {
                     this.$set(this.showDetails, index, !this.showDetails[index]);
                 }
             },
             created() {
                 this.getTalks();
+                this.getSpaces();
             }
         });
     </script>

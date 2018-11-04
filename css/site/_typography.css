@@ -1,0 +1,39 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  line-height: 1.5!important;
+  font-size: 16px;
+  color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 { 
+  color: #1e3136; 
+}
+
+a { color: inherit; text-decoration: none; }
+a, a:hover, a:focus, a:active { text-decoration: none; }
+
+/*
+ * Font selection 
+ */
+
+/* Headings and similar */
+/* Body copy */
+body,
+.timeline-content p {
+	font-family: "Open Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.menu_component,
+.schedule-tab,
+.countdown { 
+  font-family: "Poppins", sans-serif;
+}
